@@ -1,7 +1,9 @@
 package net.microservices.course.springboot.service;
 
+import jakarta.transaction.Transactional;
 import net.microservices.course.springboot.dto.UserDTO;
 import net.microservices.course.springboot.mapper.UserMapper;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -11,14 +13,17 @@ import net.microservices.course.springboot.repository.UserRepository;
 import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
+    private final ModelMapper userMapper;
+
     @Override
     public UserDTO createUser(UserDTO user) {
-        return UserMapper.mapToDTO(userRepository.save(UserMapper.mapToEntity(user)));
+        return userMapper.map(userRepository.save(userMapper.map(user, User.class)), UserDTO.class);
     }
 
     @Override

@@ -72,4 +72,16 @@ public class StudentController {
         createStudentList();
         return students.get(id);
     }
+
+    @GetMapping("query")
+    public List<Student> getStudentsByNameInQuery(@RequestParam String name) {
+        createStudentList();
+        List<Student> result = new ArrayList<>();
+        for (Student student : students) {
+            if (student.getFirstName().equalsIgnoreCase(name)) {
+                result.add(student);
+            }
+        }
+        return result;
+    }
 }
