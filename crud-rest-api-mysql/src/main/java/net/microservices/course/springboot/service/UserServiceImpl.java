@@ -1,16 +1,17 @@
 package net.microservices.course.springboot.service;
 
-import jakarta.transaction.Transactional;
-import net.microservices.course.springboot.dto.UserDTO;
-import net.microservices.course.springboot.mapper.UserMapper;
-import org.modelmapper.ModelMapper;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import net.microservices.course.springboot.dto.UserDTO;
 import net.microservices.course.springboot.entity.User;
+import net.microservices.course.springboot.exception.ResourceNotFoundException;
+import net.microservices.course.springboot.mapper.AutoUserMapper;
+import net.microservices.course.springboot.mapper.UserMapper;
 import net.microservices.course.springboot.repository.UserRepository;
-
-import java.util.List;
 
 @Service
 @Transactional
@@ -19,16 +20,18 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    private final ModelMapper userMapper;
+//    private final ModelMapper userMapper;
 
     @Override
     public UserDTO createUser(UserDTO user) {
-        return userMapper.map(userRepository.save(userMapper.map(user, User.class)), UserDTO.class);
+        return AutoUserMapper.INSTANCE.mapToUserDTO(userRepository.save(AutoUserMapper.INSTANCE.mapToUser(user)));
     }
 
     @Override
     public UserDTO getUserById(Long id) {
-        return userRepository.findById(id).map(UserMapper::mapToDTO).orElse(null);
+        return userRepository.findById(id)
+                .map(AutoUserMapper.INSTANCE::mapToUserDTO)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
     }
 
     @Override
@@ -38,7 +41,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO updateUser(UserDTO userDTO) {
-        User userToUpdate = userRepository.findById(userDTO.getId()).orElse(new User());
+        User userToUpdate = userRepository.findById(userDTO.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userDTO.getId()));
         userToUpdate.setEmail(userDTO.getEmail());
         userToUpdate.setFirstName(userDTO.getFirstName());
         userToUpdate.setLastName(userDTO.getLastName());
@@ -48,6 +52,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long id) {
+        userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
         userRepository.deleteById(id);
     }
 }

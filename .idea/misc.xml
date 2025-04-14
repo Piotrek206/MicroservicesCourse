@@ -6,6 +6,7 @@
       <list>
         <option value="$PROJECT_DIR$/springboot-rest/pom.xml" />
         <option value="$PROJECT_DIR$/crud-rest-api-mysql/pom.xml" />
+        <option value="$PROJECT_DIR$/springboot-rest-api/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
