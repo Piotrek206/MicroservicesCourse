@@ -2,11 +2,15 @@ package net.microservices.course.springboot.controller;
 
 import lombok.RequiredArgsConstructor;
 import net.microservices.course.springboot.dto.UserDTO;
+import net.microservices.course.springboot.exception.ErrorDetails;
+import net.microservices.course.springboot.exception.ResourceNotFoundException;
 import net.microservices.course.springboot.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -24,8 +28,12 @@ public class UserController {
 
     @GetMapping("{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
-        UserDTO user = userService.getUserById(id);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+//        try {
+            UserDTO user = userService.getUserById(id);
+            return new ResponseEntity<>(user, HttpStatus.OK);
+//        } catch (ResourceNotFoundException e) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
     }
 
     @GetMapping

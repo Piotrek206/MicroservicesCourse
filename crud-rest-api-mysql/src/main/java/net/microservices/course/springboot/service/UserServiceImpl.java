@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import net.microservices.course.springboot.dto.UserDTO;
 import net.microservices.course.springboot.entity.User;
+import net.microservices.course.springboot.exception.EmailAlreadyExistException;
 import net.microservices.course.springboot.exception.ResourceNotFoundException;
 import net.microservices.course.springboot.mapper.AutoUserMapper;
 import net.microservices.course.springboot.mapper.UserMapper;
@@ -24,6 +25,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO createUser(UserDTO user) {
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new EmailAlreadyExistException("Email " + user.getEmail() + " already exists");
+        }
         return AutoUserMapper.INSTANCE.mapToUserDTO(userRepository.save(AutoUserMapper.INSTANCE.mapToUser(user)));
     }
 
