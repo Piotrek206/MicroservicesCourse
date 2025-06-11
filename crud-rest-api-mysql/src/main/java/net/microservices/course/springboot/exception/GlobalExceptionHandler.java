@@ -32,4 +32,14 @@ public class GlobalExceptionHandler {
         errorDetails.setErrorCode("EMAIL_ALREADY_EXISTS");
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorDetails> handleGlobalException(Exception ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails();
+        errorDetails.setTimestamp(LocalDateTime.now());
+        errorDetails.setMessage(ex.getMessage());
+        errorDetails.setPath(request.getDescription(false));
+        errorDetails.setErrorCode("INTERNAL_SERVER_ERROR");
+        return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
